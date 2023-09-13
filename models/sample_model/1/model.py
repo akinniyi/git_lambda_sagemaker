@@ -1,2 +1,2 @@
 class SampleModel:
-    pass
+    DEPLOYS = 1
