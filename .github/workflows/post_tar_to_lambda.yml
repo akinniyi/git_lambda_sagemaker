@@ -10,12 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Get changed folders
         id: changed_folders
         run: |
-          changed_folders=$(git diff --name-only HEAD^ HEAD | xargs -n 1 dirname | sort -u | grep 'models/')
+          changed_folders=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep -s  'models' | awk -F"/" '{print $2}')
           echo "changed_folders=$changed_folders" >> $GITHUB_ENV
 
       - name: Compress action step
