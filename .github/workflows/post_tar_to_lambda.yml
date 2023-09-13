@@ -17,7 +17,7 @@ jobs:
         id: compress
         with:
           command: c
-          cwd: ./models
+          cwd: ./
           files: |
             ./sample_model
           outPath: sample_model.tar.gz
