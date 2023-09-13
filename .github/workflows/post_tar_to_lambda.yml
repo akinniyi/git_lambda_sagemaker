@@ -26,9 +26,11 @@ jobs:
 
       - name: Compress action step
         run: |
-          IFS=$'\n' read -d '' -r -a folders <<< "${{ env.changed_folders }}"
+          IFS=$'\n' read -r -d '' -a folders <<< "${{ env.changed_folders }}"
           for folder in "${folders[@]}"; do
-            tar -czvf "$folder.tar.gz" "models/$folder"
+            if [ -n "$folder" ]; then
+              tar -czvf "$folder.tar.gz" "models/$folder"
+            fi
           done
 
       - name: Post file to endpoint
