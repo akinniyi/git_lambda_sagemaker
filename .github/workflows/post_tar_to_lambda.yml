@@ -18,15 +18,15 @@ jobs:
         id: changed_folders
         run: |
           changed_folders=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep -s  'models' | awk -F"/" '{print $2}')
-          echo "changed_folders=$changed_folders" >> $GITHUB_ENV
+          echo "::set-output name=folders::$changed_folders"
       
       - name: Print changed_folders
         run: |
-          echo "Changed folders: ${{ env.changed_folders }}"
+          echo "Changed folders: ${{ steps.changed_folders.outputs.folders }}"
 
       - name: Compress action step
         run: |
-          IFS=$'\n' read -r -d '' -a folders <<< "${{ env.changed_folders }}"
+          IFS=$'\n' read -r -d '' -a folders <<< "${{ steps.changed_folders.outputs.folders }}"
           for folder in "${folders[@]}"; do
             if [ -n "$folder" ]; then
               tar -czvf "$folder.tar.gz" "models/$folder"
