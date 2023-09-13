@@ -21,16 +21,14 @@ jobs:
           echo "changed_folders=$changed_folders" >> $GITHUB_ENV
       
       - name: Print changed_folders
-        id: changed_folders_2
         run: |
-          echo "Changed folders: $changed_folders"
+          echo "Changed folders: ${{ env.changed_folders }}"
 
       - name: Compress action step
         run: |
-          IFS=$'\n' read -d '' -r -a folders <<< "$changed_folders"
+          IFS=$'\n' read -d '' -r -a folders <<< "${{ env.changed_folders }}"
           for folder in "${folders[@]}"; do
-            base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
-            tar -czvf "$base_folder.tar.gz" "$folder"
+            tar -czvf "$folder.tar.gz" "models/$folder"
           done
 
       - name: Post file to endpoint
