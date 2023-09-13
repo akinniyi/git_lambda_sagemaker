@@ -32,14 +32,28 @@ jobs:
               tar -czvf "$folder.tar.gz" "models/$folder"
             fi
           done
+      
+      - name: List files
+        run: ls -l
 
-      - name: Post file to endpoint
+      - name: Post files to endpoint
         run: |
-          IFS=$'\n' read -d '' -r -a folders <<< "$changed_folders"
+          IFS=',' read -r -a folders <<< "${{ env.changed_folders }}"
+          files=()
           for folder in "${folders[@]}"; do
-            base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
-            curl -X POST \
-            -H "Content-Type: multipart/form-data" \
-            -F "file=@$base_folder.tar.gz" \
-            https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
+            if [ -n "$folder" ]; then
+              files+=(-F "file=@$folder.tar.gz")
+            fi
           done
+          curl -X POST -H "Content-Type: multipart/form-data" "${files[@]}" https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
+
+      # - name: Post file to endpoint
+      #   run: |
+      #     IFS=',' read -r -a folders <<< "${{ env.changed_folders }}"
+      #     for folder in "${folders[@]}"; do
+      #       base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
+      #       curl -X POST \
+      #       -H "Content-Type: multipart/form-data" \
+      #       -F "file=@$base_folder.tar.gz" \
+      #       https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
+      #     done
