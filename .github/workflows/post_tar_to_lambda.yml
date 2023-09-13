@@ -46,14 +46,3 @@ jobs:
             fi
           done
           curl -X POST -H "Content-Type: multipart/form-data" "${files[@]}" https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
-
-      # - name: Post file to endpoint
-      #   run: |
-      #     IFS=',' read -r -a folders <<< "${{ env.changed_folders }}"
-      #     for folder in "${folders[@]}"; do
-      #       base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
-      #       curl -X POST \
-      #       -H "Content-Type: multipart/form-data" \
-      #       -F "file=@$base_folder.tar.gz" \
-      #       https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
-      #     done
