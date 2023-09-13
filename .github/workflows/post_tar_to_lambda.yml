@@ -27,7 +27,7 @@ jobs:
 
       - name: Post file to endpoint
         run: |
-          curl -X POST \
+          curl -v -X POST \
           -H "Content-Type: multipart/form-data" \
           -F "file=@sample_model.tar.gz" \
           https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req

@@ -1,2 +1,2 @@
 class SampleModel:
-    DEPLOYS = 4
+    DEPLOYS = 5
