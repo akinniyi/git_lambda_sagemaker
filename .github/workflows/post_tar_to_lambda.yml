@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: List changed folders
+        id: changed_folders
+        run: |
+          changed_folders=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep './models/')
+          echo "::set-output name=folders::$changed_folders"
       
       - name: Compress action step
         uses: a7ul/tar-action@v1.1.3
