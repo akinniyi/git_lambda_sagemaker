@@ -1,0 +1,30 @@
+name: Post File to Endpoint
+
+on:
+  push:
+    paths:
+      - 'models/**'
+
+jobs:
+  post_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Compress action step
+        uses: a7ul/tar-action@v1.1.0
+        id: compress
+        with:
+          command: c
+          cwd: ./models
+          files: |
+            ./sample_model
+          outPath: sample_model.tar.gz
+
+      - name: Post file to endpoint
+        run: |
+          curl -X POST \
+          -H "Content-Type: multipart/form-data" \
+          -F "file=@sample_model.tar.gz" \
+          https://driver-app-reservations-cbxz4gqrba-uk.a.run.app
