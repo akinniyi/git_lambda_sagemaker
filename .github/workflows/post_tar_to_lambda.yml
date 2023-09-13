@@ -10,33 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+        uses: actions/checkout@v2
 
-      - name: List changed folders
+      - name: Get changed folders
         id: changed_folders
         run: |
-          changed_folders=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep -s  'models' | awk -F"/" '{print $2}')
-          echo "Changed folders: $changed_folders"
-          echo "::set-output name=folders::$changed_folders"
-      
-      - name: Compress action step
-        uses: a7ul/tar-action@v1.1.3
-        id: compress
-        with:
-          command: c
-          cwd: ./
-          files: |
-            ./models/sample_model
-          outPath: sample_model.tar.gz
+          changed_folders=$(git diff --name-only HEAD^ HEAD | xargs -n 1 dirname | sort -u | grep 'models/')
+          echo "changed_folders=$changed_folders" >> $GITHUB_ENV
 
-      - name: List files
-        run: ls -l
+      - name: Compress action step
+        run: |
+          IFS=$'\n' read -d '' -r -a folders <<< "$changed_folders"
+          for folder in "${folders[@]}"; do
+            base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
+            tar -czvf "$base_folder.tar.gz" "$folder"
+          done
 
       - name: Post file to endpoint
         run: |
-          curl -v -X POST \
-          -H "Content-Type: multipart/form-data" \
-          -F "file=@sample_model.tar.gz" \
-          https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
+          IFS=$'\n' read -d '' -r -a folders <<< "$changed_folders"
+          for folder in "${folders[@]}"; do
+            base_folder=$(echo "$folder" | awk -F"/" '{print $2}')
+            curl -X POST \
+            -H "Content-Type: multipart/form-data" \
+            -F "file=@$base_folder.tar.gz" \
+            https://us-central1-buggy-174216.cloudfunctions.net/accept_tar_req
+          done
