@@ -18,7 +18,12 @@ jobs:
         id: changed_folders
         run: |
           changed_folders=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep -s  'models' | awk -F"/" '{print $2}')
-          echo "changed_folders=$changed_folders" >> $GITHUB_OUTPUT
+          echo "changed_folders=$changed_folders" >> $GITHUB_ENV
+      
+      - name: Print changed_folders
+        id: changed_folders_2
+        run: |
+          echo "Changed folders: $changed_folders"
 
       - name: Compress action step
         run: |
