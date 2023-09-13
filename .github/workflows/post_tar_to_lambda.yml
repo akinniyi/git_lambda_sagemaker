@@ -19,7 +19,7 @@ jobs:
           command: c
           cwd: ./
           files: |
-            ./sample_model
+            ./models/sample_model
           outPath: sample_model.tar.gz
 
       - name: Post file to endpoint
